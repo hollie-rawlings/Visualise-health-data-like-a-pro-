@@ -1,0 +1,33 @@
+"0","#| echo: false"
+"0","#| include: false"
+"0","#| "
+"0","data_clean <- read_csv(""oasis_cross-sectional.csv"") %>%"
+"0","  # Remove rows that do not have CDR as these are likely to be people who dont have have dementia anyway. In addition, I am going to remove any other rows that have NAs in the socioeconomic forum to make visualizations easy!"
+"0","  filter(!is.na(CDR), !is.na(SES)) %>%"
+"0","  # Encode CDR as nondemented, very mild dementia, mild dementia, moderate dementia"
+"0","  mutate(CDR = case_when(CDR == 0 ~ ""Nondemented"","
+"0","                         CDR == 0.5 ~ ""Very mild"","
+"0","                         CDR == 1 ~ ""Mild"","
+"0","                         CDR == 2 ~ ""Moderate"")) %>%"
+"0","  # Encode M as male and f as female"
+"0","  mutate(male_or_female = case_when(`M/F` == ""M"" ~ ""Male"","
+"0","                                    `M/F` == ""F"" ~ ""Female"")) %>%"
+"0","  # Let's remove any non-relevant columns and rearange columns so it's easier to work with later"
+"0","  select(male_or_female, CDR, Educ, SES, everything(), -Delay, -Hand, -ID, -`M/F`)"
+"2","
+[36m--[39m [1m[1mColumn specification[1m[22m [36m---------------------------------------------------------------------------------------------------------------------------------------------------[39m
+cols(
+  ID = [31mcol_character()[39m,
+  `M/F` = [31mcol_character()[39m,
+  Hand = [31mcol_character()[39m,
+  Age = [32mcol_double()[39m,
+  Educ = [32mcol_double()[39m,
+  SES = [32mcol_double()[39m,
+  MMSE = [32mcol_double()[39m,
+  CDR = [32mcol_double()[39m,
+  eTIV = [32mcol_double()[39m,
+  nWBV = [32mcol_double()[39m,
+  ASF = [32mcol_double()[39m,
+  Delay = [31mcol_character()[39m
+)
+"

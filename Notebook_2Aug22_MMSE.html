@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>EDA notebook 2Aug22</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="Notebook_2Aug22_MMSE_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Notebook_2Aug22_MMSE_files/libs/quarto-html/quarto.js"></script>
+<script src="Notebook_2Aug22_MMSE_files/libs/quarto-html/popper.min.js"></script>
+<script src="Notebook_2Aug22_MMSE_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Notebook_2Aug22_MMSE_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Notebook_2Aug22_MMSE_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Notebook_2Aug22_MMSE_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Notebook_2Aug22_MMSE_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Notebook_2Aug22_MMSE_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Notebook_2Aug22_MMSE_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">EDA notebook 2Aug22</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>The dataset you will be using today contains MRI scan data from participants with and without dementia and was made available by the Open Access Series of Imaging Studies (OASIS) project. The raw dataset is available on Kaggle <a href="https://www.kaggle.com/datasets/jboysen/mri-and-alzheimers">here</a>. Today, we will be focusing on visualizing the dataset using R, an important first step in any data analysis project.</p>
+</section>
+<section id="import-required-libraries" class="level1">
+<h1>Import required libraries</h1>
+<p>Run the code chunk below to import the required libraries</p>
+</section>
+<section id="data-preprocessing" class="level1">
+<h1>Data preprocessing</h1>
+<p><span class="citation" data-cites="Hollie">@Hollie</span>: If we don’t include this section, then we can preprocess and save the csv file for later use. Explanation of the columns/data can be found here: https://www.oasis-brains.org/files/oasis_cross-sectional_facts.pdf</p>
+<p><span class="citation" data-cites="Andrew">@Andrew</span>: I would prefer to preprocess and save somehwere, this is just another part that could go wrong</p>
+</section>
+<section id="exploring-the-data" class="level1">
+<h1>Exploring the data</h1>
+<p>The first thing we should do is to quickly explore the data. Run the code below to see the data that you’ve been provided. How many columns (features) and how many rows are there in your dataset? Do any features appear to be categorical? Continuous?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data_clean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 216 x 9
+   male_or_female CDR          Educ   SES   Age  MMSE  eTIV  nWBV   ASF
+   &lt;chr&gt;          &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 Female         Nondemented     2     3    74    29  1344 0.743  1.31
+ 2 Female         Nondemented     4     1    55    29  1147 0.81   1.53
+ 3 Female         Very mild       4     3    73    27  1454 0.708  1.21
+ 4 Male           Nondemented     5     2    74    30  1636 0.689  1.07
+ 5 Female         Nondemented     3     2    52    30  1321 0.827  1.33
+ 6 Female         Nondemented     5     2    81    30  1664 0.679  1.06
+ 7 Male           Very mild       2     4    82    27  1477 0.739  1.19
+ 8 Male           Nondemented     3     4    39    28  1636 0.813  1.07
+ 9 Female         Nondemented     5     1    89    30  1536 0.715  1.14
+10 Female         Nondemented     5     2    48    29  1326 0.785  1.32
+# ... with 206 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For continious data, you can get quickly get summary statistics </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> male_or_female         CDR                 Educ            SES       
+ Length:216         Length:216         Min.   :1.000   Min.   :1.000  
+ Class :character   Class :character   1st Qu.:2.000   1st Qu.:2.000  
+ Mode  :character   Mode  :character   Median :3.000   Median :2.000  
+                                       Mean   :3.231   Mean   :2.491  
+                                       3rd Qu.:4.000   3rd Qu.:3.000  
+                                       Max.   :5.000   Max.   :5.000  
+      Age             MMSE            eTIV           nWBV       
+ Min.   :33.00   Min.   :15.00   Min.   :1123   Min.   :0.6440  
+ 1st Qu.:66.00   1st Qu.:26.00   1st Qu.:1346   1st Qu.:0.7150  
+ Median :73.00   Median :29.00   Median :1446   Median :0.7485  
+ Mean   :72.44   Mean   :27.32   Mean   :1459   Mean   :0.7505  
+ 3rd Qu.:81.00   3rd Qu.:30.00   3rd Qu.:1536   3rd Qu.:0.7860  
+ Max.   :96.00   Max.   :30.00   Max.   :1992   Max.   :0.8410  
+      ASF       
+ Min.   :0.881  
+ 1st Qu.:1.142  
+ Median :1.214  
+ Mean   :1.217  
+ 3rd Qu.:1.304  
+ Max.   :1.563  </code></pre>
+</div>
+</div>
+<p>You can see from the table that there are 9 columns:</p>
+<ul>
+<li><p>Age - Age of participants</p></li>
+<li><p>ASF - Atlas scaling factor</p></li>
+<li><p>CDR - Clinical Dementia Rating</p></li>
+<li><p>Educ - Education level</p></li>
+<li><p>eTIV - Estimated total intracranial volume</p></li>
+<li><p>male_or_female - Gender of participants</p></li>
+<li><p>MMSE - Mini-Mental State Examination</p></li>
+<li><p>nWBV - Normalized whole brain volume</p></li>
+<li><p>SES - Socioeconomic status</p></li>
+</ul>
+</section>
+<section id="correlation-between-variables" class="level1">
+<h1>Correlation between variables</h1>
+<p>Let’s look at the continuous variables first and determine if there are any correlations between them. You can do this very easily using R by first sub setting the continuous features, computing a correlation matrix and plotting the correlation scores with a heatmap.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get all continuous variables into a single tibble </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>numeric_data <span class="ot">&lt;-</span> data_clean <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Age<span class="sc">:</span>ASF)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># compute correlation matrix</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(numeric_data)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize correlation matrix</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(correlation_matrix, <span class="at">method=</span><span class="st">"color"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Notebook_2Aug22_MMSE_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Based on the correlation scores:</p>
+<ul>
+<li><p>Are there any features that are highly or anti-correlated?</p></li>
+<li><p>Why do you think its important to identify correlated features?</p></li>
+</ul>
+</section>
+<section id="more-data-exploration" class="level1">
+<h1>More data exploration</h1>
+<section id="faceting-by-categorical-variables" class="level2">
+<h2 class="anchored" data-anchor-id="faceting-by-categorical-variables">Faceting by categorical variables</h2>
+<p>Another aspect of exploratory data analysis is the use of faceting to determine the distribution of values across different categories. For example, you might be interested in determining if there are differences in the age distributions of males and females are in your dataset. Again, you can do this very easily with R using ‘facet_wrap’.</p>
+<p><span class="citation" data-cites="Andrew">@Andrew</span></p>
+<p>I like this, its nice</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_clean, <span class="fu">aes</span>(<span class="at">x =</span> Age)) <span class="sc">+</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>male_or_female)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="Notebook_2Aug22_MMSE_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>There seems to be a slight difference in the age distribution of males and females. Further statistical analyses will be needed to answer this question.</p>
+<p>Can you modify the code to plot the distribution of participant age when faceted by CDR category? Are there any interesting observations you can make about this dataset?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Students to fill in this section</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="counting-distinct-feature-categories" class="level2">
+<h2 class="anchored" data-anchor-id="counting-distinct-feature-categories">Counting distinct feature categories</h2>
+<p>When exploring your data, it might also be useful for you to count the distribution of the categories that are present in your feature of interest. For example, how many males versus females are in your dataset or how many participants have dementia. Doing these exploratory analyses can often tell you about possible imbalances in your data. Here we plot a simple barplot to determine the count of our SES categorical variables.</p>
+<p><span class="citation" data-cites="Hollie">@Hollie</span>, if we want to give them a bit of an exercise, we could make the figure below horrible and correct the figure in the next section.</p>
+<p><span class="citation" data-cites="Andrew">@Andrew</span>, I think we should add a few comments on the code itself, It might not be very apparent for new R users!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>categorical_data <span class="ot">&lt;-</span> data_clean <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(male_or_female<span class="sc">:</span>SES)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(categorical_data, <span class="fu">aes</span>(SES)) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Notebook_2Aug22_MMSE_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>You can see that SES categories of 1-4 are most prevalent in the dataset and very few participants are in category 5. Can you modify the code to plot the ‘Educ’ feature? What can you conclude from this chart?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Students to fill in this section</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="can-we-improve-on-the-visualization" class="level1">
+<h1>Can we improve on the visualization?</h1>
+<p>So far, we have been using the default ggplot theme for our visualizations. Can we improve the visualizations? Here are some ideas: change the aesthetics of the plot, add labels to barcharts, change y-axis tick mark intervals and limits, add better descriptions to axes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(categorical_data, <span class="fu">aes</span>(SES)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add some text to label bars</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">stat =</span> <span class="st">'count'</span>, <span class="fu">aes</span>(<span class="at">label =</span> ..count..), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.55</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extend y axis so it's not cut-off</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">70</span>, <span class="at">by =</span> <span class="dv">10</span>), <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">70</span>), <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"SES category"</span>, <span class="at">y=</span><span class="st">"Number of participants"</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>( <span class="at">colour =</span> <span class="st">"black"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Notebook_2Aug22_MMSE_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>You can modify the code above to customize the ‘Educ’ bar chart you created earlier.</p>
+<p><span class="citation" data-cites="Andrew">@Andrew</span>, maybe we could give them a bit more guidance here, what about colours, titles. I feel like they could get a little stuck here thinking about what to do!</p>
+<div class="cell">
+
+</div>
+</section>
+<section id="plotting-more-than-2-variables" class="level1">
+<h1>Plotting more than 2 variables</h1>
+<p><span class="citation" data-cites="Hollie">@Hollie</span>: Perhaps you can make a start on this? I was thinking a scatterplot of something like eTIV and nWBV and color-coded by CDR category but I’ll let you decide what is best! You can even create a whole new section with a new dataset :-).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_clean, <span class="fu">aes</span>(<span class="at">x=</span>MMSE, <span class="at">y=</span>eTIV, <span class="at">color=</span> CDR)) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Notebook_2Aug22_MMSE_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="can-we-improve-on-our-multidimensional-plot" class="level1">
+<h1>Can we improve on our multidimensional plot?</h1>
+<p>Well, what can we do to improve this?</p>
+<ul>
+<li><p>Pick a better color scale which shows the relationship between ordinal variables</p></li>
+<li><p>Reduce the alpha so that we can see overlapping points</p></li>
+<li><p>Make the labels easier to read</p></li>
+<li><p>Re-order the legend to reflect its an ordinal variable</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Nondemented"</span> <span class="ot">=</span> <span class="st">"grey"</span>, <span class="st">"Very mild"</span> <span class="ot">=</span> <span class="st">"#fdae6b"</span>, <span class="st">"Mild"</span> <span class="ot">=</span> <span class="st">"#d94801"</span>, <span class="st">"Moderate"</span> <span class="ot">=</span> <span class="st">"#7f2704"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_clean, <span class="fu">aes</span>(<span class="at">x=</span>MMSE, <span class="at">y=</span>eTIV, <span class="at">color=</span> CDR)) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.65</span>, <span class="at">size=</span><span class="dv">3</span>)<span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> cols) <span class="sc">+</span> </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Mini-Mental State Examination score"</span>, <span class="at">y=</span><span class="st">"Estimated total intracranial volume (eTIV)"</span>,<span class="at">color =</span> <span class="st">"Clinical Dementia Rating</span><span class="sc">\n</span><span class="st"> (CDR)"</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">13</span>), </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>( <span class="at">colour =</span> <span class="st">"black"</span>), </span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Notebook_2Aug22_MMSE_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="future-work" class="level1">
+<h1>Future work</h1>
+<p>Congratulations, you now have the skills to create your own visualizations in R. We have provided a link to a new dataset for you to practice your new skills!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Link to new dataset here (maybe the diabetes one?)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#@Andrew I think thats a good idea </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

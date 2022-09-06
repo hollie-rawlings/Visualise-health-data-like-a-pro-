@@ -1,0 +1,235 @@
+---
+title: "EDA notebook 2Aug22"
+format: html
+editor: visual
+---
+
+# Introduction
+
+The dataset you will be using today contains MRI scan data from participants with and without dementia and was made available by the Open Access Series of Imaging Studies (OASIS) project. The raw dataset is available on Kaggle [here](https://www.kaggle.com/datasets/jboysen/mri-and-alzheimers). Today, we will be focusing on visualizing the dataset using R, an important first step in any data analysis project.
+
+# Import required libraries
+
+Run the code chunk below to import the required libraries
+
+```{r}
+#| echo: false
+#| include: false
+# Load in required libraies 
+library(tidyverse)
+library(here)
+library(corrplot)
+```
+
+# Data preprocessing
+
+@Hollie: If we don't include this section, then we can preprocess and save the csv file for later use. Explanation of the columns/data can be found here: https://www.oasis-brains.org/files/oasis_cross-sectional_facts.pdf
+
+@Andrew: I would prefer to preprocess and save somehwere, this is just another part that could go wrong
+
+```{r}
+#| echo: false
+#| include: false
+#| 
+data_clean <- read_csv("oasis_cross-sectional.csv") %>%
+  # Remove rows that do not have CDR as these are likely to be people who dont have have dementia anyway. In addition, I am going to remove any other rows that have NAs in the socioeconomic forum to make visualizations easy!
+  filter(!is.na(CDR), !is.na(SES)) %>%
+  # Encode CDR as nondemented, very mild dementia, mild dementia, moderate dementia
+  mutate(CDR = case_when(CDR == 0 ~ "Nondemented",
+                         CDR == 0.5 ~ "Very mild",
+                         CDR == 1 ~ "Mild",
+                         CDR == 2 ~ "Moderate")) %>%
+  # Encode M as male and f as female
+  mutate(male_or_female = case_when(`M/F` == "M" ~ "Male",
+                                    `M/F` == "F" ~ "Female")) %>%
+  # Let's remove any non-relevant columns and rearange columns so it's easier to work with later
+  select(male_or_female, CDR, Educ, SES, everything(), -Delay, -Hand, -ID, -`M/F`)
+
+```
+
+# Exploring the data
+
+The first thing we should do is to quickly explore the data. Run the code below to see the data that you've been provided. How many columns (features) and how many rows are there in your dataset? Do any features appear to be categorical? Continuous?
+
+```{r}
+data_clean
+
+# For continious data, you can get quickly get summary statistics 
+summary(data_clean)
+```
+
+You can see from the table that there are 9 columns:
+
+-   Age - Age of participants
+
+-   ASF - Atlas scaling factor
+
+-   CDR - Clinical Dementia Rating
+
+-   Educ - Education level
+
+-   eTIV - Estimated total intracranial volume
+
+-   male_or_female - Gender of participants
+
+-   MMSE - Mini-Mental State Examination
+
+-   nWBV - Normalized whole brain volume
+
+-   SES - Socioeconomic status
+
+# Correlation between variables
+
+Let's look at the continuous variables first and determine if there are any correlations between them. You can do this very easily using R by first sub setting the continuous features, computing a correlation matrix and plotting the correlation scores with a heatmap.
+
+```{r}
+# Get all continuous variables into a single tibble 
+numeric_data <- data_clean %>%
+  select(Age:ASF)
+
+# compute correlation matrix
+correlation_matrix <- cor(numeric_data)
+
+# visualize correlation matrix
+corrplot(correlation_matrix, method="color")
+
+```
+
+Based on the correlation scores:
+
+-   Are there any features that are highly or anti-correlated?
+
+-   Why do you think its important to identify correlated features?
+
+# More data exploration
+
+## Faceting by categorical variables
+
+Another aspect of exploratory data analysis is the use of faceting to determine the distribution of values across different categories. For example, you might be interested in determining if there are differences in the age distributions of males and females are in your dataset. Again, you can do this very easily with R using 'facet_wrap'.
+
+@Andrew
+
+I like this, its nice
+
+```{r}
+ggplot(data_clean, aes(x = Age)) + 
+  geom_histogram() +
+  facet_wrap(~male_or_female)
+
+```
+
+There seems to be a slight difference in the age distribution of males and females. Further statistical analyses will be needed to answer this question.
+
+Can you modify the code to plot the distribution of participant age when faceted by CDR category? Are there any interesting observations you can make about this dataset?
+
+```{r}
+#Students to fill in this section
+```
+
+## Counting distinct feature categories
+
+When exploring your data, it might also be useful for you to count the distribution of the categories that are present in your feature of interest. For example, how many males versus females are in your dataset or how many participants have dementia. Doing these exploratory analyses can often tell you about possible imbalances in your data. Here we plot a simple barplot to determine the count of our SES categorical variables.
+
+@Hollie, if we want to give them a bit of an exercise, we could make the figure below horrible and correct the figure in the next section.
+
+@Andrew, I think we should add a few comments on the code itself, It might not be very apparent for new R users!
+
+```{r}
+categorical_data <- data_clean %>%
+  select(male_or_female:SES)
+
+  
+ggplot(categorical_data, aes(SES)) +
+  geom_bar() 
+
+```
+
+You can see that SES categories of 1-4 are most prevalent in the dataset and very few participants are in category 5. Can you modify the code to plot the 'Educ' feature? What can you conclude from this chart?
+
+```{r}
+# Students to fill in this section
+  
+
+```
+
+# Can we improve on the visualization?
+
+So far, we have been using the default ggplot theme for our visualizations. Can we improve the visualizations? Here are some ideas: change the aesthetics of the plot, add labels to barcharts, change y-axis tick mark intervals and limits, add better descriptions to axes.
+
+```{r}
+ggplot(categorical_data, aes(SES)) +
+  geom_bar() +
+  # Add some text to label bars
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.55, size = 4) +
+  # Extend y axis so it's not cut-off
+  scale_y_continuous(breaks = seq(0, 70, by = 10), limits=c(0,70), expand = c(0, 0)) + 
+  labs(x = "SES category", y="Number of participants") +
+  theme_bw(base_size = 18) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        axis.ticks = element_line(colour = "black"),
+        axis.text = element_text(colour = "black"),
+        axis.title = element_text( colour = "black"))
+```
+
+You can modify the code above to customize the 'Educ' bar chart you created earlier.
+
+@Andrew, maybe we could give them a bit more guidance here, what about colours, titles. I feel like they could get a little stuck here thinking about what to do!
+
+```{r}
+
+
+```
+
+# Plotting more than 2 variables
+
+@Hollie: Perhaps you can make a start on this? I was thinking a scatterplot of something like eTIV and nWBV and color-coded by CDR category but I'll let you decide what is best! You can even create a whole new section with a new dataset :-).
+
+```{r}
+ggplot(data_clean, aes(x=eTIV, y=nWBV, color= CDR)) +
+  geom_point() 
+```
+
+# Can we improve on our multidimensional plot? 
+
+Well, what can we do to improve this?
+
+-   Pick a better color scale which shows the relationship between ordinal variables
+
+-   Reduce the alpha so that we can see overlapping points
+
+-   Make the labels easier to read
+
+-   Re-order the legend to reflect its an ordinal variable
+
+```{r}
+
+cols <- c("Nondemented" = "grey", "Very mild" = "#fdae6b", "Mild" = "#d94801", "Moderate" = "#7f2704")
+
+ggplot(data_clean, aes(x=eTIV, y=nWBV, color= CDR)) +
+  geom_point(alpha=0.65, size=3)+
+  scale_color_manual(values = cols) + 
+  theme_bw(base_size = 12) +
+  labs(x = "Estimated total intracranial volume (eTIV)", y="Normalised whole brain volume (nWBV)",color = "Clinical Dementia Rating\n (CDR)") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(hjust = 0.5, size=13), 
+        axis.line = element_line(colour = "black"),
+        axis.ticks = element_line(colour = "black"),
+        axis.text = element_text(colour = "black"),
+        axis.title = element_text( colour = "black"), 
+        legend.title = element_text(hjust = 0.5))
+```
+
+# Future work
+
+Congratulations, you now have the skills to create your own visualizations in R. We have provided a link to a new dataset for you to practice your
+
+```{r}
+# TODO: Link to new dataset here (maybe the diabetes one?)
+```

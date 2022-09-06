@@ -1,0 +1,119 @@
+---
+title: "Example visualizations for Demo"
+author: "Andrew"
+date: "15 July 2022"
+output: html_document
+---
+
+This notebook is used to guide the medcomms data visualization demo
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+# Datasets
+library(gapminder)
+```
+
+
+
+# Set theme
+
+```{r}
+# Set theme (very minimal)
+theme_set(theme_bw())
+
+theme_update(
+  axis.line = element_line(colour = "black"),
+  axis.ticks = element_line(colour = "black"),
+  axis.text = element_text(color = "black"),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  plot.margin = margin(rep(15, 4)),
+  strip.background = element_rect(colour = NA, fill = NA),
+  strip.text = element_text(face = "bold", hjust = 0),
+  text = element_text(size = 12)
+)
+```
+
+# iris dataset
+Here we will use the iris dataset to create a basic boxplot
+
+```{r}
+iris_boxplot <- ggplot(data = iris) +
+  aes(x = Species, y = Sepal.Length, color = Species) +
+  geom_boxplot() +
+  geom_jitter(position = position_jitter(0.2)) +
+  scale_y_continuous(breaks = seq(0, 8, by = 2), limits = c(0, 8), expand = c(0, 0)) +
+  xlab(NULL) +
+  ylab("Sepal length (cm)")
+
+iris_boxplot
+
+ggsave(here("output", "iris_boxplot.png"), iris_boxplot)
+```
+
+
+
+
+# Gapminder data
+
+Here, we can examine the gapminder data (GDP per capita for year versus life expectancy for year 2007) using a more complex plot. Taken from here: https://bookdown.org/jbrophy115/bookdown-clinepi/vis.html
+
+```{r}
+
+# Focus on 2007 only 
+data <- gapminder %>% 
+  filter(year == 2007)
+
+gapminder_graph <- ggplot(data, aes(x = gdpPercap, y = lifeExp)) +
+    geom_point(aes(size = pop, color = continent), alpha = 0.5) +
+    stat_smooth(formula = y ~ log10(x), se = FALSE, size = 0.5, color = "black", method = 'gam', linetype="dotted") +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth") +
+    scale_size_area(guide = "none", max_size = 15) +
+    scale_x_continuous(labels = scales::dollar, breaks = seq(0, 50000, by = 10000), limits = c(0, 50000), expand = c(0, 0)) +
+    scale_y_continuous(breaks = seq(0, 90, by = 10), limits = c(0, 90), expand = c(0, 0)) +
+    scale_color_brewer(name = "", palette = "Dark2") 
+
+gapminder_graph
+
+ggsave(here("output", "gapminder_chart.png"), gapminder_graph)
+
+```
+
+
+# Optional: animated graph for gapminder data above (save as gif)
+```{r}
+library(gganimate)
+# if you get a "Error in transform_path", you will need to install the 'transformr' library
+
+# Here we use gganimate to look at 30 years worth of data as an animation
+data_filtered_30yrs <- gapminder %>%
+  filter(year > 1976)
+
+animated_plot <- ggplot(data_filtered_30yrs, aes(x = gdpPercap, y = lifeExp)) +
+    geom_point(aes(size = pop, color = continent), alpha = 0.5) +
+    stat_smooth(formula = y ~ log10(x), se = FALSE, size = 0.5, color = "black", method = 'gam', linetype="dotted") +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth") +
+    scale_size_area(guide = "none", max_size = 15) +
+    scale_x_continuous(labels = scales::dollar, breaks = seq(0, 60000, by = 10000), limits = c(0, 60000), expand = c(0, 0)) +
+    scale_y_continuous(breaks = seq(0, 90, by = 10), limits = c(0, 90), expand = c(0, 0)) +
+    scale_color_brewer(name = "", palette = "Dark2")  +
+    # gganimate code
+    ggtitle("{frame_time}") +
+    transition_time(year) +
+    ease_aes("linear") +
+    enter_fade() +
+    exit_fade()
+
+# it might take a while to run!
+animated_plot
+
+# Save as gif
+anim_save(here("output", "gapminder_animated.gif"), animated_plot)
+
+```
+
+

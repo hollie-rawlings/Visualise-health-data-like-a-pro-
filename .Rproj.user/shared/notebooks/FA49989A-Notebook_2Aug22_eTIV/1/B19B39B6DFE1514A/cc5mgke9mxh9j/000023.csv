@@ -1,0 +1,2 @@
+"0","ggplot(data_clean, aes(x=MMSE, y=eTIV, color= CDR)) +"
+"0","  geom_point() "

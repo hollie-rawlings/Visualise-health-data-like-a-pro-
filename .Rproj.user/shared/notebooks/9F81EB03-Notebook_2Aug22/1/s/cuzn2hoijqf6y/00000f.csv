@@ -1,0 +1,7 @@
+"0","categorical_data <- data_clean %>%"
+"0","  select(male_or_female:SES)"
+"0",""
+"0","  "
+"0","ggplot(categorical_data, aes(SES)) +"
+"0","  geom_bar() "
+"0",""

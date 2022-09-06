@@ -1,0 +1,19 @@
+"0","# Read csv file into R"
+"0","url <- ""https://raw.githubusercontent.com/andrewliew86/Dostarlimab-news-and-tweets-analysis/main/alzheimers_dataset.csv?token=GHSAT0AAAAAABYOLZBGGYHSTOIJSD3FNTWCYYXJSGA"""
+"0","data <- read_csv(url)"
+"2","
+[36m--[39m [1m[1mColumn specification[1m[22m [36m---------------------------------------------------------------------------------------------------------------[39m
+cols(
+  male_or_female = [31mcol_character()[39m,
+  CDR = [31mcol_character()[39m,
+  Educ = [32mcol_double()[39m,
+  SES = [32mcol_double()[39m,
+  Age = [32mcol_double()[39m,
+  MMSE = [32mcol_double()[39m,
+  eTIV = [32mcol_double()[39m,
+  nWBV = [32mcol_double()[39m,
+  ASF = [32mcol_double()[39m
+)
+"
+"0","# Examine data"
+"0","data"
