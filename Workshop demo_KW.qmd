@@ -1,0 +1,224 @@
+---
+title: "Workshop demo 2"
+format: html
+editor: visual
+---
+
+# Introduction
+
+The dataset you will be using today contains MRI scan data from participants with and without dementia and was made available by the Open Access Series of Imaging Studies (OASIS) project. The raw dataset is available on Kaggle [here](https://www.kaggle.com/datasets/jboysen/mri-and-alzheimers). Today, we will be focusing on visualizing the dataset using R, an important first step in any data analysis project.
+
+# Import required libraries
+
+Run the code chunk below to import the required libraries
+
+```{r}
+#| echo: false
+#| include: false
+# Load in required libraies 
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, here, corrplot, RCurl, ggtext,readr)
+```
+
+# Exploring the data
+
+The first thing we need to do is to read in the .csv file containing our dataset using the `read_csv` function.
+
+After reading the data into R we can quickly explore the data. Run the code below to examine the dataset. How many columns (variables) and how many rows are there in your dataset? Do any variables appear to be categorical? Ordinal? Continuous?
+
+```{r}
+# Read csv file into R
+url <- "https://raw.githubusercontent.com/hollie-rawlings/Visualise-health-data-like-a-pro-/main/alzheimers_dataset.csv"
+data <- readr::read_csv(url)
+
+# Examine data
+data
+```
+
+You can see from the table that there are 9 columns:
+
+-   Age - Age of participants
+
+-   ASF - Atlas scaling factor
+
+-   CDR - Clinical Dementia Rating
+
+-   Educ - Education level
+
+-   eTIV - Estimated total intracranial volume
+
+-   male_or_female - Gender of participants
+
+-   MMSE - Mini-Mental State Examination
+
+-   nWBV - Normalized whole brain volume
+
+-   SES - Socioeconomic status
+
+# Correlation between variables
+
+Let's look at the continuous variables first and determine if there are any correlations between them. You can do this very easily using R by first sub-setting the continuous variables, computing a correlation matrix and plotting the correlation scores with a heatmap.
+
+```{r}
+# Get all continuous variables into a single tibble 
+numeric_data <- data %>%
+  select(Age:ASF)
+
+# Compute correlation matrix
+correlation_matrix <- cor(numeric_data)
+
+# Visualize correlation matrix
+corrplot(correlation_matrix, method="color")
+
+```
+
+Based on the correlation scores:
+
+-   Are there any variables that are highly or anti-correlated?
+
+-   Why do you think its important to identify correlated variables?
+
+# More data exploration
+
+## Faceting by categorical variables
+
+Another aspect of exploratory data analysis is the use of faceting to determine the distribution of values across different categories. For example, you might be interested in determining if there are differences in the age distributions of males and females in your dataset. Again, you can do this very easily with R using `facet_wrap`.
+
+```{r}
+ggplot(data, aes(x = Age)) + 
+  geom_histogram() +
+  # facet_wrap tells R to facet by a specific column
+  facet_wrap(~male_or_female)
+
+```
+
+There seems to be a slight difference in the age distribution of males and females. Further statistical analyses will be needed to answer this question.
+
+Can you modify the code to plot the distribution of participant age when faceted by CDR category? Which CDR categories are most/least prevalent in our dataset?
+
+```{r}
+# Participants to complete code
+
+```
+
+## Counting distinct feature categories
+
+When exploring your data, it might also be useful for you to count the distribution of the categories that are present in your feature of interest. For example, how many males versus females are in your dataset or how many participants have dementia. Doing these exploratory analyses can often tell you about possible imbalances in your data. Here we plot a simple bar chart to determine the count of our SES ordinal variables.
+
+```{r}
+# Select all the columns with categorical data (male_or_female to SES)
+categorical_data <- data %>%
+  select(male_or_female:SES)
+
+# Create a bar plot of your data  
+ggplot(categorical_data, aes(SES)) +
+  geom_bar() 
+
+```
+
+You can see that SES categories of 1-4 are most prevalent in the dataset and very few participants are in category 5. Can you modify the code above to plot the 'Educ' variable? What can you conclude from this chart?
+
+```{r}
+# Participants to fill in this section
+
+```
+
+# Can we improve on the visualization?
+
+So far, we have been using the default ggplot settings for our visualizations. Can we improve the visualizations? Here are some ideas: change the aesthetics of the plot, add labels to bar charts, change y-axis tick mark intervals and limits and add better descriptions to axes.
+
+```{r}
+ggplot(categorical_data, aes(SES)) +
+  # Plot a bar graph and fill bars with blue color
+  geom_bar(fill = "blue") +
+  # Add some text to label bars
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.55, size = 3.5) +
+  # Extend y axis so it's not cut-off
+  scale_y_continuous(breaks = seq(0, 70, by = 10), limits=c(0,70), expand = c(0, 0)) + 
+  # Add labels to axes
+  labs(x = "SES category", y="Number of participants") +
+  # Remove border, background and grid of plot 
+  # Change colors of axis elements
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        axis.ticks = element_line(colour = "black"),
+        axis.ticks.x = element_blank(),
+        axis.text = element_text(colour = "black"),
+        axis.title = element_text( colour = "black"))
+```
+
+Modify the code above to plot the 'Educ' variable instead of 'SES'. Feel free to experiment with different colors, font sizes etc...
+
+```{r}
+# Participants to complete code
+
+```
+
+# Plotting more than two variables
+
+One advantage of data visualization is the ability to simultaneously examine trends across multiple variables. Here, we examine the relationship between estimated total intracranial volume (eTIV) and normalized whole brain volume (nWBV) in patients with different clinical dementia ratings (CDR).
+
+```{r}
+ggplot(data, aes(x=eTIV, y=nWBV, color= CDR)) +
+  geom_point() 
+```
+
+What observations can you make from the visualization? Is the visualization easy to interpret?
+
+# Can we improve on our multidimensional plot?
+
+Well, what can we do to improve this?
+
+Here are some ideas:
+
+1.  Changing the colour scale to represent that CDR is an ordinal variable and ordering the legend by severity
+
+2.  Adding more helpful labels on our x and y-axis
+
+3.  Changed the aesthetics of the graph to produce a more minimal design
+
+```{r}
+
+cols <- c("Nondemented" = "grey", "Very mild" = "#fdae6b", "Mild" = "#d94801", "Moderate" = "#7f2704")
+
+ggplot(data, aes(x=eTIV, y=nWBV, color= CDR)) +
+  geom_point(alpha=0.65, size=3)+
+  scale_color_manual(values = cols) + 
+  theme_bw(base_size = 12) +
+  labs(x = "Estimated total intracranial <br> volume (eTIV, mm<sup>3</sup>)", y="Normalised whole brain <br> volume (nWBV, mm<sup>3</sup>)",color = "Clinical Dementia Rating\n (CDR)") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 13), 
+        axis.line = element_line(colour = "black"),
+        axis.ticks = element_line(colour = "black"),
+        axis.text = element_text(colour = "black"),
+        axis.title.x = element_markdown(colour = "black", size = 10, margin = margin (t = 5)), 
+        axis.title.y = element_markdown(colour = "black", size = 10, margin = margin (r = 10)),
+        legend.title = element_text(hjust = 0.5))
+```
+
+What observations can you make from the visualization? Is the visualization easier to interpret?
+
+Now, use the code above and plot your own multidimensional plot to examine how nWBV changes with age (e.g. change 'eTIV' to 'Age')”.. What is the relationship between nWBV, Age and CDR?
+
+```{r}
+# Participants to complete code
+
+```
+
+# Future work
+
+Congratulations! You now have the basic skills to create your own visualizations in R. If you are interested, we have provided with you with another dataset from Kaggle to hone your R skills further. We would love to see what you come up with so feel free to post your work on GitHub or email them to us at informatics\@pharmagenesis.com. Happy visualizing!
+
+```{r}
+# Link to csv file: 
+url <- 'https://raw.githubusercontent.com/hollie-rawlings/Visualise-health-data-like-a-pro-/main/diabetes_dataset.csv'
+diabetes_data <- read_csv(url)
+# Link to the dataset on Kaggle: https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset
+
+```
